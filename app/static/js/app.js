@@ -28,10 +28,51 @@ app.component('app-header', {
               </ul>
             </div>
           </nav>
-      </header>    
+      </header> 
+      
   `,
   data: function() {
     return {};
+  }
+});
+
+app.component('news-list', {
+  name: 'NewsList',
+  template: `
+  <div class="news">
+  <h2>News</h2>
+  <ul class="news__list">
+  <li v-for="article in articles"
+    class="news__item">{{ article.title }}
+  {{ article.description }}
+  <img :src="article.urlToImage"/>
+  </li>
+    </ul>
+ </div>
+      
+  `,
+  created() {
+
+    let self = this;
+
+    fetch('https://newsapi.org/v2/top-headlines?country=us',
+   {
+    headers: {
+    'Authorization': 'Bearer e1bb9c0398f14487a46f4243d131273a'
+    }
+   })
+    .then(function(response) {
+    return response.json();
+    })
+    .then(function(data) {
+    console.log(data);
+    self.articles = data.articles;
+    });
+    },
+  data: function() {
+    return {
+      articles: []
+    };
   }
 });
 
