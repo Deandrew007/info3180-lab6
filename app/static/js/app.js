@@ -1,23 +1,4 @@
 /* Add your Application JavaScript */
-const app = Vue.createApp({
-  data() {
-    return {
-      welcome: 'Hello World! Welcome to VueJS'
-    }
-  },
-  components: {
-    'home': Home,
-    'news-list': NewsList
-    }
-});
-
-const router = VueRouter.createRouter({
-  history: VueRouter.createWebHistory(),
-  routes: [
-  { path: '/', component: Home },
-  { path: '/news', component: NewsList }
-  ]
- });
 
  const Home = {
   name: 'Home',
@@ -34,36 +15,7 @@ const router = VueRouter.createRouter({
   }
  };
 
-app.component('app-header', {
-  name: 'AppHeader',
-  template: `
-      <header>
-          <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-            <a class="navbar-brand" href="#">VueJS App</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <router-link to="/" class="nav-link">Home</router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link to="/news" class="nav-link">News</router-link>
-                </li>
-              </ul>
-            </div>
-          </nav>
-      </header> 
-      
-  `,
-  data: function() {
-    return {};
-  }
-});
-
-const NewsList = {
+ const NewsList = {
   name: 'NewsList',
   template: `
 
@@ -108,7 +60,7 @@ const NewsList = {
     fetch('https://newsapi.org/v2/top-headlines?country=us',
    {
     headers: {
-    'Authorization': 'Bearer <token goes here>'
+    'Authorization': 'Bearer <News API Key goes here>'
     }
    })
     .then(function(response) {
@@ -127,6 +79,55 @@ const NewsList = {
   }
 };
 
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHistory(),
+  routes: [
+  { path: '/', component: Home },
+  { path: '/news', component: NewsList }
+  ]
+ });
+
+const app = Vue.createApp({
+  data() {
+    return {
+      welcome: 'Hello World! Welcome to VueJS'
+    }
+  },
+  components: {
+    'home': Home,
+    'news-list': NewsList
+    }
+});
+
+app.component('app-header', {
+  name: 'AppHeader',
+  template: `
+      <header>
+          <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+            <a class="navbar-brand" href="#">VueJS App</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <router-link to="/" class="nav-link">Home</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link to="/news" class="nav-link">News</router-link>
+                </li>
+              </ul>
+            </div>
+          </nav>
+      </header> 
+      
+  `,
+  data: function() {
+    return {};
+  }
+});
+
 app.component('app-footer', {
   name: 'AppFooter',
   template: `
@@ -140,27 +141,8 @@ app.component('app-footer', {
       return {
           year: (new Date).getFullYear()
       }
-  },
-  methods: {
-    searchNews() {
-    let self = this;
-    fetch('https://newsapi.org/v2/everything?q='+
-   self.searchTerm + '&language=en', {
-    headers: {
-    'Authorization': 'Bearer <your-api-token>'
-    }
-   })
-    .then(function(response) {
-    return response.json();
-    })
-    .then(function(data) {
-    console.log(data);
-    self.articles = data.articles;
-    });
-    }
-    }
+  }
 });
-
 
 
 app.use(router)
