@@ -4,8 +4,35 @@ const app = Vue.createApp({
     return {
       welcome: 'Hello World! Welcome to VueJS'
     }
-  }
+  },
+  components: {
+    'home': Home,
+    'news-list': NewsList
+    }
 });
+
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHistory(),
+  routes: [
+  { path: '/', component: Home },
+  { path: '/news', component: NewsList }
+  ]
+ });
+
+ const Home = {
+  name: 'Home',
+  template: `
+  <div class="home">
+  <img src="/static/images/logo.png" alt="VueJS Logo">
+  <h1>{{ welcome }}</h1>
+  </div>
+  `,
+  data() {
+  return {
+  welcome: 'Hello World! Welcome to VueJS'
+  }
+  }
+ };
 
 app.component('app-header', {
   name: 'AppHeader',
@@ -20,10 +47,10 @@ app.component('app-header', {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                  <router-link to="/" class="nav-link">Home</router-link>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">News</a>
+                  <router-link to="/news" class="nav-link">News</router-link>
                 </li>
               </ul>
             </div>
@@ -36,17 +63,40 @@ app.component('app-header', {
   }
 });
 
-app.component('news-list', {
+const NewsList = {
   name: 'NewsList',
   template: `
+
+  <div class="form-inline d-flex justify-content-center">
+    <div class="form-group mx-sm-3 mb-2">
+    <label class="sr-only" for="search">Search</label>
+    <input type="search" name="search" v-model="searchTerm"
+    id="search" class="form-control mb-2 mr-sm-2" placeholder="Enter
+    search term here" />
+    <button class="btn btn-primary mb-2"
+    @click="searchNews">Search</button>
+    </div>
+  </div>
+
   <div class="news">
   <h2>News</h2>
-  <ul class="news__list">
+
+  <ul class="cards">
+  
   <li v-for="article in articles"
-    class="news__item">{{ article.title }}
-  {{ article.description }}
-  <img :src="article.urlToImage"/>
-  </li>
+    class="card">
+    
+    <div class="title">
+    {{ article.title }} 
+  </div>
+
+    <img :src="article.urlToImage"/>
+
+    <div class = "description">
+    {{ article.description }}
+  </div>
+
+    </li>
     </ul>
  </div>
       
@@ -58,7 +108,7 @@ app.component('news-list', {
     fetch('https://newsapi.org/v2/top-headlines?country=us',
    {
     headers: {
-    'Authorization': 'Bearer e1bb9c0398f14487a46f4243d131273a'
+    'Authorization': 'Bearer <token goes here>'
     }
    })
     .then(function(response) {
@@ -71,10 +121,11 @@ app.component('news-list', {
     },
   data: function() {
     return {
-      articles: []
+      articles: [],
+      searchTerm: ''
     };
   }
-});
+};
 
 app.component('app-footer', {
   name: 'AppFooter',
@@ -89,7 +140,28 @@ app.component('app-footer', {
       return {
           year: (new Date).getFullYear()
       }
-  }
-})
+  },
+  methods: {
+    searchNews() {
+    let self = this;
+    fetch('https://newsapi.org/v2/everything?q='+
+   self.searchTerm + '&language=en', {
+    headers: {
+    'Authorization': 'Bearer <your-api-token>'
+    }
+   })
+    .then(function(response) {
+    return response.json();
+    })
+    .then(function(data) {
+    console.log(data);
+    self.articles = data.articles;
+    });
+    }
+    }
+});
 
+
+
+app.use(router)
 app.mount('#app');
